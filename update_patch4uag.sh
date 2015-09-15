@@ -192,7 +192,7 @@ then
   echo "failed to stop IMS service, exit!"
 exit
 fi
-##tar tf $tarPatchFile 2>/dev/null | while read tarSinglePatch
+
 
 num_all_patch=0
 num_updated_patch=0
