@@ -138,7 +138,7 @@ function usage
 function showVersion
 {
   echo -e "\n"
-  echo -e "\e[0;31;1m                       ++++++                 update_patch4uag.sh script version 2.3          ++++++ \e[0m"
+  echo -e "\e[0;31;1m                       ++++++                 update_patch4uag.sh script version 2.4          ++++++ \e[0m"
   echo -e "\e[0;31;1m                       ++++++                       For Personal Use ONLY!!                   ++++++ \e[0m"
   echo -e "\e[0;31;1m                       ++++++  Any issue, please contact guoyong.zhang@mitel.com for support  ++++++\n \e[0m"
 }
