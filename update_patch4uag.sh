@@ -1,12 +1,12 @@
 #!/bin/bash
 ########################################################################
-# Copyright (C) 2015
+# Copyright (C) 2016
 #  
 # 
 #ALL RIGHTS RESERVED
 #
 #
-# Authors: Guoyong
+# Author: Guoyong
 #
 ########################################################################
 function is_tgzFile
@@ -146,7 +146,7 @@ function showVersion
 if [[ $# -ne 1 && $# -ne 2 ]]; then
   #statements
   usage
-  echo "exit...."
+  echo "wrong paramter numbers, exit...."
   exit
 fi
 #echo -e "\e[1;32m ############ start ########### \e[0m"
@@ -192,7 +192,7 @@ then
   echo "failed to stop IMS service, exit!"
 exit
 fi
-
+##tar tf $tarPatchFile 2>/dev/null | while read tarSinglePatch
 
 num_all_patch=0
 num_updated_patch=0
@@ -269,7 +269,7 @@ do
     appsrvInstall.sh|GF_Monitor.sh)
        handlePatch /usr/IMS/current/provisioning/scripts/
        ;;
-    fp*|cmgrd)
+    qosDbg|fp*|cmgrd)
        handlePatch /usr/local/6bin/
        if [ $? -eq 0 ]
        then
@@ -293,8 +293,13 @@ do
           \cp $patch /usr/IMS/exports/images/AM_sw/fpath/usr/local/lib64/$patch
        fi
        ;;
-    *Mgr|*server|bladeMon|mod_mxa.so|ecscf|lrf|dnsResolver|utimacoLi*|pm|dm|mlog*|cdrLogger|snmpd|perfMon*|pm_*.sh|lighttpd|controlDb.sh|controlDb.sh|SM|mon_getFanStatus.sh|mon_getPowerSupplyStatus.sh|customReboot.sh|alarmGenerator|cleanupLogFiles.sh|mysql_reset_user_passwords.sh|mavcrypt|ovldMon)
+    *Mgr|*server|bladeMon|mod_mxa.so|ecscf|lrf|dnsResolver|utimacoLi*|pm|dm|mlog*|cdrLogger|snmpd|perfMon*|pm_*.sh|lighttpd|controlDb.sh|controlDb.sh|SM|mon_getFanStatus.sh|mon_getPowerSupplyStatus.sh|customReboot.sh|alarmGenerator|cleanupLogFiles.sh|mysql_reset_user_passwords.sh|mavcrypt|ovldMon|Cdr_Format_UAG.xml|libIntfAppTypeMap.so)
        handlePatch /usr/IMS/current/bin/
+       ;;
+    # uag_managed_tables.sql handling need to be before the general sql patches
+    uag_managed_tables.sql)
+       handlePatch /usr/IMS/current/sql/agent/
+       echo -e "\e[1;35mNote: it is cms related sql patch, no need to re-pop platform file\n \e[0m"
        ;;
     *sql)
        handlePatch /usr/IMS/current/sql/
@@ -328,7 +333,7 @@ do
        handlePatch /usr/IMS/current/provisioning/config/
        ;;   
     *)
-       echo -e "\e[1;31m unknown patch file, pls update patch mannually: $patch!!\e[0m"
+       echo -e "\e[1;31m NOTICE: This is unknown patch file, pls update it mannually: $patch!\e[0m"
        let "num_mannual_patch++"
        mannual_patch_list=$mannual_patch_list" $patch"
        ;;
@@ -339,12 +344,12 @@ EOF
 
 if [ $b_schemaUpdated -eq 1 ]
 then
-  echo -e "\e[1;31m        NOTIFY: won't start IMS service due to sql/cfg file updated \e[0m"
+  echo -e "\e[1;31m        NOTICE: won't start IMS service due to sql/cfg file updated \e[0m"
 fi
 
 if [ $num_mannual_patch -ne 0 ]
 then
-  echo -e "\e[1;31m        NOTIFY: won't start IMS service due to some unknown patches \e[0m"
+  echo -e "\e[1;31m        NOTICE: won't start IMS service due to some unknown patches \e[0m"
 fi
 
 outputResult
